@@ -1,6 +1,9 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://https://unibridge-project.vercel.app/api/$1" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/api/(.*)", 
+      "destination": "https://https://unibridge-project.vercel.app/api/$1" },
+    
+    { "source": "/(.*)",
+      "destination": "/index.html" }
   ]
 }
