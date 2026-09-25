@@ -1,34 +1,109 @@
-import axios from "axios";
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
 
-// All API calls go through this instance. Set REACT_APP_API_URL in a .env
-// file at the frontend root if your backend isn't on localhost:5000.
-const api = axios.create({
-  baseURL:"/api",
-});
+import Navbar from "./components/Navbar";
+import PrivateRoute from "./components/PrivateRoute";
 
-// Attach the JWT (if we have one) to every outgoing request.
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("unibridge_token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+import Landing from "./pages/Landing";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import FindPeople from "./pages/FindPeople";
+import AskQuestion from "./pages/AskQuestion";
+import QuestionDetail from "./pages/QuestionDetail";
+import Community from "./pages/Community";
+import Profile from "./pages/Profile";
 
-// If the backend ever says the token is invalid/expired, clear local
-// storage and bounce the user back to login.
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem("unibridge_token");
-      localStorage.removeItem("unibridge_user");
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
-      }
-    }
-    return Promise.reject(error);
-  }
-);
+/*
+  Layout for all pages that require login.
 
-export default api;
+  The sidebar and top header are already inside Navbar.
+  The left margin below gives the page content enough space
+  so it does not go underneath the desktop sidebar.
+*/
+function ProtectedPage({ children }) {
+  return (
+    <PrivateRoute>
+      <main className="lg:ml-[250px] min-h-[calc(100vh-72px)] bg-[#f7fbff] px-4 py-6 md:px-7">
+        {children}
+      </main>
+    </PrivateRoute>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <div className="min-h-screen bg-[#f7fbff]">
+          
+          {/* Top header + sidebar */}
+          <Navbar />
+
+          <Routes>
+            {/* Public pages */}
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+
+            {/* Protected pages */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedPage>
+                  <Dashboard />
+                </ProtectedPage>
+              }
+            />
+
+            <Route
+              path="/find-people"
+              element={
+                <ProtectedPage>
+                  <FindPeople />
+                </ProtectedPage>
+              }
+            />
+
+            <Route
+              path="/community"
+              element={
+                <ProtectedPage>
+                  <Community />
+                </ProtectedPage>
+              }
+            />
+
+            <Route
+              path="/ask"
+              element={
+                <ProtectedPage>
+                  <AskQuestion />
+                </ProtectedPage>
+              }
+            />
+
+            <Route
+              path="/questions/:id"
+              element={
+                <ProtectedPage>
+                  <QuestionDetail />
+                </ProtectedPage>
+              }
+            />
+
+            <Route
+              path="/profile"
+              element={
+                <ProtectedPage>
+                  <Profile />
+                </ProtectedPage>
+              }
+            />
+          </Routes>
+        </div>
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}
