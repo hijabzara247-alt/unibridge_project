@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
+import Header from "./components/Header";
 import PrivateRoute from "./components/PrivateRoute";
 
 import Landing from "./pages/Landing";
@@ -15,18 +16,19 @@ import QuestionDetail from "./pages/QuestionDetail";
 /*
   Layout for all pages that require login.
 
-  Navbar renders a FIXED sidebar (250px wide, desktop only) and a FIXED
-  top header (64px tall). Fixed elements are taken out of normal page
-  flow, so without this wrapper the page content renders underneath
-  them instead of next to/below them. This adds the matching
-  left margin (sidebar) and top padding (header) on desktop.
+  Navbar's sidebar is still `fixed` (250px wide, desktop only), so this
+  wrapper needs the matching left margin. But the top Header is now
+  `sticky`, not `fixed` — it's rendered here, inside this same wrapper,
+  so it naturally sits in the flow above `children`. No pt-16 needed:
+  the header just pushes the content below it, always in sync.
 */
 function ProtectedPage({ children }) {
   return (
     <PrivateRoute>
-      <main className="pt-16 lg:ml-[250px] min-h-screen bg-[#f7fbff] px-4 py-6 md:px-7">
-        {children}
-      </main>
+      <div className="lg:ml-[250px] min-h-screen bg-[#f7fbff]">
+        <Header />
+        <main className="px-4 py-6 md:px-7">{children}</main>
+      </div>
     </PrivateRoute>
   );
 }
