@@ -12,6 +12,25 @@ import FindPeople from "./pages/FindPeople";
 import AskQuestion from "./pages/AskQuestion";
 import QuestionDetail from "./pages/QuestionDetail";
 
+/*
+  Layout for all pages that require login.
+
+  Navbar renders a FIXED sidebar (250px wide, desktop only) and a FIXED
+  top header (64px tall). Fixed elements are taken out of normal page
+  flow, so without this wrapper the page content renders underneath
+  them instead of next to/below them. This adds the matching
+  left margin (sidebar) and top padding (header) on desktop.
+*/
+function ProtectedPage({ children }) {
+  return (
+    <PrivateRoute>
+      <main className="pt-16 lg:ml-[250px] min-h-screen bg-[#f7fbff] px-4 py-6 md:px-7">
+        {children}
+      </main>
+    </PrivateRoute>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -26,33 +45,33 @@ export default function App() {
             <Route
               path="/dashboard"
               element={
-                <PrivateRoute>
+                <ProtectedPage>
                   <Dashboard />
-                </PrivateRoute>
+                </ProtectedPage>
               }
             />
             <Route
               path="/find-people"
               element={
-                <PrivateRoute>
+                <ProtectedPage>
                   <FindPeople />
-                </PrivateRoute>
+                </ProtectedPage>
               }
             />
             <Route
               path="/ask"
               element={
-                <PrivateRoute>
+                <ProtectedPage>
                   <AskQuestion />
-                </PrivateRoute>
+                </ProtectedPage>
               }
             />
             <Route
               path="/questions/:id"
               element={
-                <PrivateRoute>
+                <ProtectedPage>
                   <QuestionDetail />
-                </PrivateRoute>
+                </ProtectedPage>
               }
             />
           </Routes>
